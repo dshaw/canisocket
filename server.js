@@ -20,7 +20,7 @@ var fileServer  = new static.Server('./public'),
 var versionInfo = {
   draft75: 'http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-75',
   draft76: 'http://www.whatwg.org/specs/web-socket-protocol/'
-}
+};
 
 /**
  * Server
@@ -38,7 +38,7 @@ server.on('request', function(request, response) {
   });
 }).listen(port);
 
-server.on('connection', function(connection) {x
+server.on('connection', function(connection) {
   server.send(connection.id,
       JSON.stringify({
         msg: 'Yes you can!',
