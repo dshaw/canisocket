@@ -57,7 +57,7 @@
       var canyou     = document.getElementById('canyou'),
           details    = document.getElementById('details'),
           wsStatus   = document.getElementById('status'),
-          wsServer   = "ws://localhost:8888/",
+          wsServer   = 'ws://canisocket.com/',
           connection = {},
           // nerf console
           console = console || { log: function() {} },
@@ -85,19 +85,19 @@
           };
 
           connection.onclose = function( event ) {
-            wsStatus.innerHTML = "[ Disconnected ]";
-            wsStatus.title = "Socket Closed";
-            wsStatus.className = "closed";
+            wsStatus.innerHTML = '[ Disconnected ]';
+            wsStatus.title = 'Socket Closed';
+            wsStatus.className = 'closed';
           };
 
         }
       }
 
       function canisocket() {
-        if ("WebSocket" in window) {
+        if ('WebSocket' in window) {
           openConnection();
         } else {
-          canyou.innerHTML = "Nope";
+          canyou.innerHTML = 'Nope.';
           details.innerHTML = '<a href="http://www.w3.org/TR/websockets/">No Web Sockets for you.</a>';
         }
       }
