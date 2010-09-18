@@ -39,7 +39,8 @@ server.on('request', function(request, response) {
 }).listen(port);
 
 server.on('connection', function(connection) {
-  console.log(connection.id);
+  console.log(connection.id + ' opened');
+  
   server.send(connection.id,
       JSON.stringify({
         msg: 'Yes you can!',
