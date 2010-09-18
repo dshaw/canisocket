@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<head>
+  <meta charset=utf-8>
+  <title>Can I Socket</title>
+  <style>
+    body {
+      margin: 1em; font-family: sans-serif;
+      background-color: black; color: white;
+      text-align: center
+    }
+    article, footer { display: block }
+    #canyou {
+      font-size: 10em;
+      padding: .5em;
+      vertical-align: middle; text-align: center;
+      -moz-text-shadow: rgba(200,200,200,0.5) .1em .1em .5em;
+      -webkit-text-shadow: rgba(200,200,200,0.5) .1em .1em .5em;
+      text-shadow: rgba(200,200,200,0.5) .1em .1em .5em;
+    }
+    #canyou:hover {
+      background-color: gray;
+      background-color: rgba(50,50,50,0.5)
+    }
+    #status {
+      position: absolute; bottom: 0; left: 45%;
+      width: 8em; text-align: center;
+    }
+    #status.open {
+      background-color: #00FF00;
+      background-color: rgba(0,255,0,0.2);
+    }
+    #status.closed {
+      background-color: #FF0000;
+      background-color: rgba(255,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <article id=canyou>...checking</article>
+  <footer id=status>[ Not Connected ]</footer>
+
+  <script>
+    (function(window, document) {
+      var canyou    = document.getElementById('canyou');
+      var wsStatus  = document.getElementById('status');
+      supportsWebSockets = ("WebSocket" in window),
+      wsServer = "ws://localhost:8888/",
+      connection = {};
+
+      // nerf console
+      var console = console || { log: function() {} };
+
+      function openConnection() {
+        // readyState no yet defined or readyState != CLOSING || CLOSED
+        if (!connection.readyState || connection.readyState > WebSocket.OPEN) {
+
+          connection = new WebSocket( wsServer );
+
+          connection.onopen = function () {
+            wsStatus.innerHTML = '[ Connected ]';
+            wsStatus.title = 'Socket Open';
+            wsStatus.className = 'open';
+            connection.send( 'connect' );
+          };
+
+          connection.onmessage = function( message ) {
+            console.log(message.data);
+            canyou.innerHTML = message.data;
+            connection.close();
+          };
+
+          connection.onclose = function( event ) {
+            wsStatus.innerHTML = "[ Disconnected ]";
+            wsStatus.title = "Socket Closed";
+            wsStatus.className = "closed";
+          };
+
+        }
+      }
+
+      if (supportsWebSockets) {
+        openConnection();
+      } else {
+        canyou.innerHTML = "Nope";
+      }
+
+      connection.isOpen = function() {
+        return (supportsWebSockets && ("readyState" in connection)
+            && (connection.readyState === WebSocket.OPEN));
+      };
+
+    })(window, document);
+  </script>
+</body>
+</html>
