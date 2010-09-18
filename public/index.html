@@ -8,21 +8,28 @@
       background-color: black; color: white;
       text-align: center
     }
+    a { color: #0084B4 }
     article, footer { display: block }
-    #canyou {
-      font-size: 10em;
+    article {
       padding: .5em;
-      vertical-align: middle; text-align: center;
+      vertical-align: middle;
       -moz-text-shadow: rgba(200,200,200,0.5) .1em .1em .5em;
       -webkit-text-shadow: rgba(200,200,200,0.5) .1em .1em .5em;
       text-shadow: rgba(200,200,200,0.5) .1em .1em .5em;
     }
-    #canyou:hover {
-      background-color: gray;
-      background-color: rgba(50,50,50,0.5)
+    article:hover {
+      background-color: #323232;
+      background-color: rgba(50,50,50,0.5);
+      -moz-box-shadow: rgba(255,255,255,0.5) 0 0 1em;
+      -webkit-box-shadow: rgba(255,255,255,0.5) 0 0 1em;
+      box-shadow: rgba(255,255,255,0.5) 0 0 1em;
+    }
+    #canyou {
+      font-size: 7em;
+      padding: .5em;
     }
     #status {
-      position: absolute; bottom: 0; left: 45%;
+      position: absolute; bottom: 0; left: 43.5%;
       width: 8em; text-align: center;
     }
     #status.open {
@@ -34,21 +41,27 @@
       background-color: rgba(255,0,0,0.2);
     }
   </style>
+  <!--[if lt IE9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
 </head>
 <body>
-  <article id=canyou>...checking</article>
+  <article>
+    <p id=canyou>Can I Socket?</p>
+    <p id=details>...checking</p>
+  </article>
   <footer id=status>[ Not Connected ]</footer>
 
   <script>
     (function(window, document) {
-      var canyou    = document.getElementById('canyou');
-      var wsStatus  = document.getElementById('status');
-      supportsWebSockets = ("WebSocket" in window),
-      wsServer = "ws://localhost:8888/",
-      connection = {};
-
-      // nerf console
-      var console = console || { log: function() {} };
+      var canyou     = document.getElementById('canyou'),
+          details    = document.getElementById('details'),
+          wsStatus   = document.getElementById('status'),
+          wsServer   = "ws://localhost:8888/",
+          connection = {},
+          // nerf console
+          console = console || { log: function() {} },
+          pause = 1000;
 
       function openConnection() {
         // readyState no yet defined or readyState != CLOSING || CLOSED
@@ -65,7 +78,9 @@
 
           connection.onmessage = function( message ) {
             console.log(message.data);
-            canyou.innerHTML = message.data;
+            var data = JSON.parse(message.data);
+            canyou.innerHTML = data.msg;
+            details.innerHTML = '<a href="'+data.info+'">'+data.version+' web socket</a>';
             connection.close();
           };
 
@@ -78,16 +93,16 @@
         }
       }
 
-      if (supportsWebSockets) {
-        openConnection();
-      } else {
-        canyou.innerHTML = "Nope";
+      function canisocket() {
+        if ("WebSocket" in window) {
+          openConnection();
+        } else {
+          canyou.innerHTML = "Nope";
+          details.innerHTML = '<a href="http://www.w3.org/TR/websockets/">No Web Sockets for you.</a>';
+        }
       }
 
-      connection.isOpen = function() {
-        return (supportsWebSockets && ("readyState" in connection)
-            && (connection.readyState === WebSocket.OPEN));
-      };
+      window.onload = setTimeout(canisocket, pause);
 
     })(window, document);
   </script>

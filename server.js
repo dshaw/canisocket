@@ -1,14 +1,26 @@
 var http        = require('http'),
-    sys         = require('sys'),
-    // npm  
-    static      = require('node-static'),
+    sys         = require('sys');
+
+// vendorized for heroku
+require.paths.unshift('./vendor');
+
+// npm
+var static      = require('node-static'),
     ws          = require('websocket-server');
 
 // config
-var fileServer  = new static.Server('./public')
+var fileServer  = new static.Server('./public'),
     port        = parseInt(process.env.PORT) || 8888,
     debug       = true,
     connections = {};
+
+/**
+ * Web Sockets version info
+ */
+var versionInfo = {
+  draft75: 'http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-75',
+  draft76: 'http://www.whatwg.org/specs/web-socket-protocol/'
+}
 
 /**
  * Server
@@ -26,8 +38,14 @@ server.on('request', function(request, response) {
   });
 }).listen(port);
 
-server.on('connection', function(connection) {
-  server.send(connection.id, 'Yes you can!');
+server.on('connection', function(connection) {x
+  server.send(connection.id,
+      JSON.stringify({
+        msg: 'Yes you can!',
+        version: connection.version,
+        info: versionInfo[connection.version] || ''
+      })
+  );
 });
 
 server.on('close', function(connection) {
