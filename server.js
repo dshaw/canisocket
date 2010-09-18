@@ -25,7 +25,7 @@ var versionInfo = {
 /**
  * Server
  */
-var server = ws.createServer({ debug: true }, http.createServer());
+var server = ws.createServer({ debug: debug }, http.createServer());
 
 server.on("listening", function() {
   console.log('Server listening on port :' + port);
@@ -39,6 +39,7 @@ server.on('request', function(request, response) {
 }).listen(port);
 
 server.on('connection', function(connection) {
+  console.log(connection.id);
   server.send(connection.id,
       JSON.stringify({
         msg: 'Yes you can!',
